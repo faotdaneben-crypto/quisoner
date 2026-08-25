@@ -5,9 +5,17 @@
   "workspaces": [
     "packages/*"
   ],
+  "allowScripts": {
+    "@prisma/client": true,
+    "@prisma/engines": true,
+    "prisma": true,
+    "esbuild": true,
+    "sharp": true,
+    "core-js": true
+  },
   "scripts": {
     "dev": "cd packages/surveys-app && npm run dev",
-    "build": "npm run build --workspace=surveys-app",
-    "start": "npm run start --workspace=surveys-app"
+    "build": "npm run build --workspace=@rs-br/surveys-app",
+    "start": "npm run start --workspace=@rs-br/surveys-app"
   }
 }

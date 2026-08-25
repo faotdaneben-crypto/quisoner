@@ -2,6 +2,14 @@
   "name": "@rs-br/surveys-app",
   "version": "1.0.0",
   "private": true,
+  "allowScripts": {
+    "@prisma/client": true,
+    "@prisma/engines": true,
+    "prisma": true,
+    "esbuild": true,
+    "sharp": true,
+    "core-js": true
+  },
   "scripts": {
     "dev": "next dev -p 3013",
     "build": "prisma generate && next build",
