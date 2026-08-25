@@ -3,7 +3,24 @@ import jwt from 'jsonwebtoken'
 import type { Role, Permission } from '@/lib/authz'
 import { hasPermission } from '@/lib/authz'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production'
+/**
+ * JWT_SECRET WAJIB berasal dari environment variable.
+ *
+ * - Production (Vercel): jika JWT_SECRET tidak diset, throw saat generateToken
+ *   dipanggil — TIDAK ADA fallback secret hardcoded. Ini mencegah deploy
+ *   production berjalan dengan secret yang bisa ditebak.
+ * - Development lokal: tetap wajib set JWT_SECRET di .env.local; tanpa itu akan
+ *   throw dengan pesan jelas (bukan diam-diam memakai secret lemah).
+ */
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET
+  if (!secret) {
+    throw new Error(
+      'JWT_SECRET belum diset. Tambahkan JWT_SECRET di environment variable (Vercel) atau .env.local (lokal).'
+    )
+  }
+  return secret
+}
 
 export interface JwtPayload {
   userId: string
@@ -13,12 +30,12 @@ export interface JwtPayload {
 }
 
 export function generateToken(payload: JwtPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' })
+  return jwt.sign(payload, getJwtSecret(), { expiresIn: '24h' })
 }
 
 export function verifyToken(token: string): JwtPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as JwtPayload
+    return jwt.verify(token, getJwtSecret()) as JwtPayload
   } catch (error) {
     return null
   }
