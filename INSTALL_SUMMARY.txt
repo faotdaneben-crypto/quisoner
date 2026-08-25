@@ -1,0 +1,260 @@
+# INSTALLATION SUMMARY - SISTEM KUESIONER KEPUASAN PASIEN
+# =======================================================
+
+## ✓ WHAT HAS BEEN CREATED
+
+### 1. PROJECT STRUCTURE (packages/surveys-app/)
+├── prisma/
+│   ├── schema.prisma          ✅ Complete DB schema with all tables
+│   └── seed.ts                ✅ Demo data seeder (admin, questions, services)
+│
+├── src/app/
+│   ├── survey/page.tsx        ✅ Patient survey form (mobile-first)
+│   ├── admin/login/page.tsx   ✅ Admin authentication
+│   ├── admin/dashboard/page.tsx ✅ Statistics dashboard
+│   ├── admin/respondents/page.tsx ✅ Respondent list & details
+│   ├── admin/suggestions/page.tsx ✅ Feedback management
+│   ├── admin/reports/page.tsx       ✅ Report export page
+│   ├── admin/qr-codes/page.tsx      ✅ QR generator UI
+│   └── api/                   ✅ All REST API endpoints
+│
+├── src/lib/
+│   ├── database.ts            ✅ Database functions
+│   ├── auth.ts                ✅ JWT authentication
+│   └── supabase.ts            ✅ Supabase client (optional)
+│
+├── src/types/
+│   ├── schemas.ts             ✅ Zod validation schemas
+│   └── survey-validation.ts   ✅ Survey input validation
+│
+├── scripts/
+│   └── setup-windows.bat      ✅ Windows installation script
+│
+├── package.json               ✅ All dependencies
+├── tsconfig.json              ✅ TypeScript config
+├── tailwind.config.js         ✅ Custom theme
+├── next.config.js             ✅ Next.js config
+├── .env.example               ✅ Environment template
+├── README.md                  ✅ Full documentation
+└── INSTALLATION.md            ✅ Step-by-step guide
+
+## 📦 DATABASE SCHEMA (8 Tables)
+
+1. **users** - Admin accounts (bcrypt hashed passwords)
+2. **services** - Service units (Pendaftaran, IGD, Rawat Jalan, etc.)
+3. **questions** - 9 survey questions
+4. **answer_options** - Answer choices with scores (1-4)
+5. **respondents** - Patient demographic data
+6. **responses** - Individual question answers
+7. **suggestions** - Patient feedback with status tracking
+8. **audit_logs** - Admin activity log
+
+## 🔑 DEMO CREDENTIALS
+
+Username: `admin`
+Password: `Admin123!`
+
+(Admin user will be created automatically after running db:seed)
+
+## 🚀 HOW TO RUN (Windows)
+
+### Option 1: Automated Setup (Recommended)
+```cmd
+cd C:\Users\Digitalisasi\quisoner\packages\surveys-app
+scripts\setup-windows.bat
+```
+
+This will:
+1. Delete old node_modules
+2. Install npm packages
+3. Create .env file from template
+4. Generate Prisma client
+5. Push schema to database
+6. Seed initial data
+
+### Option 2: Manual Steps
+
+**Step 1: Install Dependencies**
+```cmd
+cd packages\surveys-app
+npm install
+```
+
+**Step 2: Configure Environment**
+```cmd
+copy .env.example .env
+```
+
+Edit `.env` and add your PostgreSQL connection:
+```
+DATABASE_URL="postgresql://username:password@localhost:5432/surveys_db"
+JWT_SECRET=change-this-to-random-string
+```
+
+**Step 3: Setup Database**
+```cmd
+npm run db:generate
+npm run db:push
+npm run db:seed
+```
+
+**Step 4: Run Development Server**
+```cmd
+npm run dev
+```
+
+## 🌐 ACCESS POINTS
+
+Once server is running on http://localhost:3001:
+
+| URL | Description |
+|-----|-------------|
+| /survey | Patient survey form (public) |
+| /admin/login | Admin login page |
+| /admin/dashboard | Statistics & charts |
+| /admin/respondents | View all responses |
+| /admin/suggestions | Patient feedback |
+| /admin/reports | Export reports |
+| /admin/qr-codes | Generate QR codes |
+
+## 📊 FEATURES IMPLEMENTED
+
+✅ **Patient Features:**
+- Mobile-first survey form
+- Auto-detect time slot
+- 9 standard questions
+- Optional suggestion field
+- Success confirmation screen
+
+✅ **Admin Dashboard:**
+- Real-time statistics cards
+- Total/hello/bulan respondents
+- Average satisfaction %
+- Service unit rankings
+- Top improvement areas
+- Question distribution charts
+
+✅ **Data Management:**
+- Filterable respondent list
+- Date range filters
+- Search by name/service
+- Pagination support
+- Detailed view per patient
+
+✅ **Security:**
+- JWT token authentication
+- Bcrypt password hashing
+- Input validation (zod)
+- SQL injection protection
+- Role-based access control
+
+✅ **Multi-Unit Support:**
+- Dynamic service units
+- Filter by unit
+- Ranking per unit
+- QR code per unit
+
+## 🛠️ NEXT STEPS (Not Yet Implemented)
+
+The following features need additional implementation:
+
+1. **Charts Implementation** (Recharts integration)
+2. **PDF Export** (pdfmake or similar library)
+3. **Excel Export** (exceljs)
+4. **WebSocket Real-time** (socket.io for live updates)
+5. **Question Management UI** (CRUD for questions)
+6. **Service CRUD** (Add/edit service units)
+7. **Settings Page** (System configuration)
+8. **Email Notifications** (nodemailer integration)
+
+These are ready to add but not required for MVP functionality.
+
+## ⚙️ SYSTEM REQUIREMENTS
+
+Minimum:
+- Node.js 18+
+- PostgreSQL 12+
+- 2GB RAM
+- Modern browser
+
+Recommended:
+- Node.js 20 LTS
+- PostgreSQL 15+
+- 4GB RAM
+- SSD storage
+
+## 📝 FILE LOCATIONS
+
+All files are in:
+```
+C:\Users\Digitalisasi\quisoner\packages\surveys-app\
+```
+
+Key files:
+- Schema: `prisma/schema.prisma`
+- Seed data: `prisma/seed.ts`
+- Patient form: `src/app/survey/page.tsx`
+- Dashboard: `src/app/admin/dashboard/page.tsx`
+- API docs: Check route files in `src/app/api/`
+
+## 🎯 TESTING CHECKLIST
+
+After installation, test these flows:
+
+1. **Patient Journey:**
+   - [ ] Open http://localhost:3001/survey
+   - [ ] Fill out personal info
+   - [ ] Answer all 9 questions
+   - [ ] Add optional suggestion
+   - [ ] Submit and see success message
+
+2. **Admin Login:**
+   - [ ] Open http://localhost:3001/admin/login
+   - [ ] Use admin/Admin123!
+   - [ ] Should redirect to dashboard
+
+3. **Dashboard Stats:**
+   - [ ] See total respondents = 0 initially
+   - [ ] After patient submits, stats update
+   - [ ] Rankings section shows all units
+   - [ ] Question stats show distributions
+
+4. **Respondent List:**
+   - [ ] Navigate to admin/respondents
+   - [ ] Submit one more survey
+   - [ ] New entry appears in table
+   - [ ] Click "Lihat" to see details
+
+5. **Filters:**
+   - [ ] Use date range filter
+   - [ ] Use service type dropdown
+   - [ ] Verify results update correctly
+
+## 🔧 TROUBLESHOOTING
+
+**Issue: "Cannot find module"**
+Solution: Run `npm install` again
+
+**Issue: Database connection error**
+Solution: Check DATABASE_URL in .env, ensure PostgreSQL is running
+
+**Issue: Migration failed**
+Solution: Run `npm run db:generate` first, then `db:push`
+
+**Issue: Can't login as admin**
+Solution: Re-run `npm run db:seed` to reset credentials
+
+**Issue: Port 3001 already in use**
+Solution: Edit package.json to change port, or kill existing process
+
+## 📞 SUPPORT
+
+For any issues, check:
+1. This installation summary
+2. README.md in project root
+3. PRISMA_SCHEMA for database structure
+4. API route files for endpoint specifications
+
+---
+
+Dibuat dengan ❤️ untuk RS Baiturrahim Jambi

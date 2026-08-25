@@ -1,0 +1,15 @@
+-- AlterEnum
+ALTER TYPE "UserRole" ADD VALUE IF NOT EXISTS 'DIREKSI';
+ALTER TYPE "UserRole" ADD VALUE IF NOT EXISTS 'KEPALA_UNIT';
+ALTER TYPE "UserRole" ADD VALUE IF NOT EXISTS 'VIEWER';
+
+-- AlterTable (users)
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "isActive" BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "unitId" TEXT;
+
+-- CreateIndex
+CREATE INDEX IF NOT EXISTS "users_unitId_idx" ON "users"("unitId");
+
+-- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_unitId_fkey"
+  FOREIGN KEY ("unitId") REFERENCES "services"("id") ON DELETE SET NULL ON UPDATE CASCADE;
