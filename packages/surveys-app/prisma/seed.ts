@@ -1,33 +1,39 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient()
+const databaseUrl =
+  process.env.DATABASE_URL_POSTGRES_PRISMA_URL || process.env.DATABASE_URL
+
+const prisma = new PrismaClient({
+  datasources: databaseUrl ? { db: { url: databaseUrl } } : undefined,
+})
 
 async function seed() {
   console.log('🌱 Starting database seed...')
-  
-  // Clear existing data (in reverse order due to foreign keys)
-  await prisma.auditLog.deleteMany()
-  await prisma.suggestion.deleteMany()
-  await prisma.response.deleteMany()
-  await prisma.answerOption.deleteMany()
-  await prisma.question.deleteMany()
-  await prisma.paymentType.deleteMany()
-  await prisma.service.deleteMany()
-  await prisma.user.deleteMany()
-  
-  // Create admin user
-  const hashedPassword = await bcrypt.hash('Admin123!', 10)
-  const admin = await prisma.user.create({
-    data: {
-      name: 'Administrator',
-      username: 'admin',
-      email: 'admin@baiturrahim.co.id',
-      passwordHash: hashedPassword,
-      role: 'SUPER_ADMIN'
-    }
-  })
-  console.log('✓ Admin user created:', admin.username)
+
+  // IDEMPOTENT GUARD: jangan hapus/menimpa data yang sudah ada.
+  // Jika pertanyaan sudah ada, berarti database sudah di-seed — skip.
+  const existingQuestions = await prisma.question.count()
+  if (existingQuestions > 0) {
+    console.log('✓ Database sudah memiliki data (seeded). Skip.')
+    return
+  }
+
+  // Buat admin user (hanya jika belum ada).
+  const existingAdmin = await prisma.user.findUnique({ where: { username: 'admin' } })
+  if (!existingAdmin) {
+    const hashedPassword = await bcrypt.hash('Admin123!', 10)
+    await prisma.user.create({
+      data: {
+        name: 'Administrator',
+        username: 'admin',
+        email: 'admin@baiturrahim.co.id',
+        passwordHash: hashedPassword,
+        role: 'SUPER_ADMIN'
+      }
+    })
+    console.log('✓ Admin user created')
+  }
   
   // Create payment types
   const paymentTypes = await Promise.all([
