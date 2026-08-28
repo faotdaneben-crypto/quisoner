@@ -16,9 +16,34 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
+/**
+ * Resolusi URL database.
+ *
+ * Production (Vercel + Neon): Neon integration meng-inject connection string
+ * Prisma-ready sebagai `DATABASE_URL_POSTGRES_PRISMA_URL`. Prioritaskan itu.
+ * Fallback ke `DATABASE_URL` untuk development lokal (yang memakai localhost).
+ *
+ * Jangan hardcode URL/credential — selalu dari environment variable.
+ */
+function resolveDatabaseUrl(): string {
+  const url =
+    process.env.DATABASE_URL_POSTGRES_PRISMA_URL || process.env.DATABASE_URL
+  if (!url) {
+    throw new Error(
+      'DATABASE_URL (atau DATABASE_URL_POSTGRES_PRISMA_URL) belum diset.'
+    )
+  }
+  return url
+}
+
 function createPrismaClient(): PrismaClient {
   return new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
+    datasources: {
+      db: {
+        url: resolveDatabaseUrl(),
+      },
+    },
   })
 }
 
