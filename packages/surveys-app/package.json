@@ -12,7 +12,7 @@
   },
   "scripts": {
     "dev": "next dev -p 3013",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && node scripts/migrate.js && next build",
     "start": "next start -p 3013",
     "lint": "next lint",
     "db:generate": "prisma generate",
